@@ -10,7 +10,7 @@ RUN pnpm install
 RUN pnpm build
 
 # Runner stage
-FROM --platform=linux/arm64 node:20-alpine as runner
+FROM --platform=linux/arm/v7 node:20-alpine as runner
 
 COPY --from=builder dist/app.js app.js
 
