@@ -2,13 +2,8 @@ import { publicIpv4 } from "public-ip";
 import { monitorEnv } from "./env";
 import { createDnsRecord, listDnsRecords, updateDnsRecord } from "./cloudflare";
 
-let currentIp: string | null = null;
-
 const handler = async () => {
   const ip = await publicIpv4();
-  if (ip === currentIp) {
-    return;
-  }
 
   const records = await listDnsRecords();
 
@@ -21,11 +16,7 @@ const handler = async () => {
     (record) => record.name === monitorEnv.DOMAIN_NAME,
   );
   if (!record) {
-    const successfullyCreated = await createDnsRecord({ newIpAddress: ip });
-
-    if (successfullyCreated) {
-      currentIp = ip;
-    }
+    await createDnsRecord({ newIpAddress: ip });
     return;
   }
 
@@ -34,23 +25,23 @@ const handler = async () => {
     return;
   }
 
-  const successfullyUpdated = await updateDnsRecord({
+  await updateDnsRecord({
     newIpAddress: ip,
     recordId: record.id,
   });
-
-  if (successfullyUpdated) {
-    currentIp = ip;
-  }
 };
 
 console.log("Starting Monitor 🦎");
 
-setInterval(() => {
-  handler().catch((error) =>
-    console.error(
-      "An unhandled error occurred while updating DNS record.",
-      error,
-    ),
-  );
-}, 1000);
+(async () => {
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    await handler();
+    await new Promise((resolve) => setTimeout(resolve, 10000));
+  }
+})().catch((error) =>
+  console.error(
+    "An unhandled error occurred while updating DNS record.",
+    error,
+  ),
+);
