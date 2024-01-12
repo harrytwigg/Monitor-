@@ -26,4 +26,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: harrytwigg/monitor:${{ steps.package-version.outputs.current-version}}
+          tags: |
+            harrytwigg/monitor:${{ steps.package-version.outputs.current-version}}
+            harrytwigg/monitor:latest
