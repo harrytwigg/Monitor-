@@ -1,7 +1,5 @@
 # Builder stage
-FROM --platform=linux/arm64 node:20-alpine as builder
-
-RUN npm install -g pnpm
+FROM node:20-alpine as builder
 
 COPY . .
 
