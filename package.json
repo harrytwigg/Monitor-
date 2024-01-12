@@ -1,5 +1,5 @@
 {
-  "name": "minitor",
+  "name": "monitor",
   "license": "MIT",
   "version": "0.0.1",
   "description": "Cloudflare IP address updater written in typescript 🦎",
