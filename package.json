@@ -1,0 +1,29 @@
+{
+  "name": "minitor",
+  "license": "MIT",
+  "version": "0.0.1",
+  "description": "Cloudflare IP address updater written in typescript 🦎",
+  "scripts": {
+    "dev": "node --watch -r ts-node/register src/app.ts",
+    "build": "tsc && esbuild src/app.ts --bundle --outfile=dist/app.js --platform=node --target=node20 --minify"
+  },
+  "devDependencies": {
+    "@types/node": "20.10.7",
+    "@typescript-eslint/eslint-plugin": "5.62.0",
+    "@typescript-eslint/parser": "5.62.0",
+    "esbuild": "0.19.10",
+    "eslint": "8.56.0",
+    "eslint-config-prettier": "8.10.0",
+    "nodemon": "2.0.22",
+    "prettier": "3.1.1",
+    "ts-node": "^10.9.2",
+    "typescript": "5.3.3"
+  },
+  "dependencies": {
+    "@t3-oss/env-core": "^0.7.3",
+    "axios": "^1.6.5",
+    "dotenv": "^16.3.1",
+    "public-ip": "^6.0.1",
+    "zod": "^3.22.4"
+  }
+}
