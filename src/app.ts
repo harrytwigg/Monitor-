@@ -1,35 +1,56 @@
 import { publicIpv4 } from "public-ip";
 import { monitorEnv } from "./env";
-import axios from "axios";
+import { createDnsRecord, listDnsRecords, updateDnsRecord } from "./cloudflare";
 
-const getIp = async () => {
-    // get public ip
-    const ip = await publicIpv4();
-};
+let currentIp: string | null = null;
 
-const updateDnsRecord = async ({ newIpAddress }: { newIpAddress: string }) => {
-    console.log(`Updating DNS record to ${newIpAddress}...`);
+const handler = async () => {
+  const ip = await publicIpv4();
+  if (ip === currentIp) {
+    return;
+  }
 
-    try {
-        const response = await axios.put(
-            `https://api.cloudflare.com/client/v4/zones/${monitorEnv.CLOUDFLARE_ZONE_ID}/dns_records/${monitorEnv.CLOUDFLARE_DNS_RECORD_ID}`,
-            {
-                type: "A", // Assuming it's an A record. Change if necessary.
-                name: monitorEnv.CLOUDFLARE_DNS_RECORD_ID,
-                content: newIpAddress,
-                ttl: 1,
-            },
-            {
-                headers: {
-                    "X-Auth-Email": monitorEnv.CLOUDFLARE_EMAIL,
-                    "X-Auth-Key": monitorEnv.CLOUDFLARE_API_KEY,
-                    "Content-Type": "application/json",
-                },
-            }
-        );
+  const records = await listDnsRecords();
 
-        console.log(`DNS record updated successfully to ${newIpAddress}!`);
-    } catch (error) {
-        console.error("Error updating DNS record:", error);
+  if (records === null) {
+    console.warn("No DNS records found.");
+    return;
+  }
+
+  const record = records.result.find(
+    (record) => record.name === monitorEnv.DOMAIN_NAME,
+  );
+  if (!record) {
+    const successfullyCreated = await createDnsRecord({ newIpAddress: ip });
+
+    if (successfullyCreated) {
+      currentIp = ip;
     }
+    return;
+  }
+
+  // If record already exists, with same name and type then dont update
+  if (record.type === "A" && record.content === ip) {
+    return;
+  }
+
+  const successfullyUpdated = await updateDnsRecord({
+    newIpAddress: ip,
+    recordId: record.id,
+  });
+
+  if (successfullyUpdated) {
+    currentIp = ip;
+  }
 };
+
+console.log("Starting Monitor 🦎");
+
+setInterval(() => {
+  handler().catch((error) =>
+    console.error(
+      "An unhandled error occurred while updating DNS record.",
+      error,
+    ),
+  );
+}, 1000);

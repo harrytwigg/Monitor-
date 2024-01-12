@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "description": "Cloudflare IP address updater written in typescript 🦎",
   "scripts": {
-    "dev": "node --watch -r ts-node/register src/app.ts",
+    "dev": "tsx watch src/app.ts",
     "build": "tsc && esbuild src/app.ts --bundle --outfile=dist/app.js --platform=node --target=node20 --minify"
   },
   "devDependencies": {
@@ -14,9 +14,8 @@
     "esbuild": "0.19.10",
     "eslint": "8.56.0",
     "eslint-config-prettier": "8.10.0",
-    "nodemon": "2.0.22",
     "prettier": "3.1.1",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.7.0",
     "typescript": "5.3.3"
   },
   "dependencies": {

@@ -3,5 +3,9 @@
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     "[ignore]": {
         "editor.defaultFormatter": "foxundermoon.shell-format"
+    },
+    "editor.tabSize": 2,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
     }
 }
